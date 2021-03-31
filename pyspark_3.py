@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession
-import sys 
+import pandas as pd
+import sys
 arg1 = sys.argv[1]
 arg2 = sys.argv[2]
 
@@ -15,6 +16,9 @@ file_path = "./airports.csv"
 
 airports = my_spark.read.csv(file_path, header=True)
 
-result = airports.filter("latitude>=10").filter("latitude<=90").filter("longitude>=-90").filter("longitude<=-10")
+result = airports.filter("latitude>=10").filter(
+    "latitude<=90").filter("longitude>=-90").filter("longitude<=-10").select("name")
 
-result.coalesce(1).write.format('com.databricks.spark.csv').options(header='true').save(outfile)
+# result.coalesce(1).write.format('com.databricks.spark.csv').options(header='true').save(outfile)
+resultpdf = result.select("*").toPandas()
+resultpdf.to_csv(outfile, index=None, sep=' ')
